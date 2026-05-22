@@ -43,36 +43,30 @@ namespace ChaoticFights
 
         public void OpenAndLoop(string exePath, string filePath, string processName)
         {
-            LoggerInstance.Msg($"OpenAndLoop called with file: {filePath}");
-
             // Close if already open
             foreach (var p in Process.GetProcessesByName(processName))
             {
-                LoggerInstance.Msg($"Killing existing process: {p.Id}");
                 p.Kill();
                 p.WaitForExit();
             }
 
             IntPtr gameWindow = GetForegroundWindow();
-            LoggerInstance.Msg($"Game window handle: {gameWindow}");
 
             Process.Start(new ProcessStartInfo
             {
                 FileName = Path.Combine(basePath, filePath),
                 UseShellExecute = true
             });
-            LoggerInstance.Msg("Started explorer.exe");
 
             Process mediaProcess = null;
             for (int i = 0; i < 20; i++)
             {
                 System.Threading.Thread.Sleep(500);
                 var procs = Process.GetProcessesByName(processName);
-                LoggerInstance.Msg($"Attempt {i + 1}: found {procs.Length} processes");
+
                 if (procs.Length > 0)
                 {
                     mediaProcess = procs[0];
-                    LoggerInstance.Msg($"Media process found: {mediaProcess.Id}");
                     break;
                 }
             }
@@ -82,13 +76,11 @@ namespace ChaoticFights
 
             if (mediaProcess == null)
             {
-                LoggerInstance.Msg("Media process never found, returning.");
                 return;
             }
 
             SetForegroundWindow(mediaProcess.MainWindowHandle);
             System.Threading.Thread.Sleep(200);
-            LoggerInstance.Msg("Sending Ctrl+L");
 
             keybd_event((byte)0x11, 0, 0, 0);
             keybd_event((byte)0x54, 0, 0, 0);        // T down
@@ -97,7 +89,6 @@ namespace ChaoticFights
 
             System.Threading.Thread.Sleep(100);
             SetForegroundWindow(gameWindow);
-            LoggerInstance.Msg("Done, refocused game.");
         }
     }
 
