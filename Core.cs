@@ -22,14 +22,14 @@ namespace ChaoticFights
         }
         public override void OnLateInitializeMelon()
         {
-            Actions.onMatchStarted += () => System.Threading.Tasks.Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file2.Value, "Microsoft.Media.Player"));
-            Actions.onMatchEnded += () => System.Threading.Tasks.Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file1.Value, "Microsoft.Media.Player"));
+            Actions.onMatchStarted += () => Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file2.Value, "Microsoft.Media.Player"));
+            Actions.onMatchEnded += () => Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file1.Value, "Microsoft.Media.Player"));
         }
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
             if (sceneName == "Gym" || sceneName == "Park")
             {
-                System.Threading.Tasks.Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file1.Value, "Microsoft.Media.Player"));
+                Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file1.Value, "Microsoft.Media.Player"));
             }
         }
         [DllImport("user32.dll")]
@@ -61,7 +61,7 @@ namespace ChaoticFights
             Process mediaProcess = null;
             for (int i = 0; i < 20; i++)
             {
-                System.Threading.Thread.Sleep(500);
+                Thread.Sleep(500);
                 var procs = Process.GetProcessesByName(processName);
 
                 if (procs.Length > 0)
@@ -72,7 +72,7 @@ namespace ChaoticFights
             }
 
             // Wait for the window to actually be ready
-            System.Threading.Thread.Sleep(3000);
+            Thread.Sleep(3000);
 
             if (mediaProcess == null)
             {
@@ -80,14 +80,14 @@ namespace ChaoticFights
             }
 
             SetForegroundWindow(mediaProcess.MainWindowHandle);
-            System.Threading.Thread.Sleep(200);
+            Thread.Sleep(200);
 
             keybd_event((byte)0x11, 0, 0, 0);
             keybd_event((byte)0x54, 0, 0, 0);        // T down
             keybd_event((byte)0x54, 0, 0x0002, 0);   // T up
             keybd_event((byte)0x11, 0, 0x0002, 0);
 
-            System.Threading.Thread.Sleep(100);
+            Thread.Sleep(100);
             SetForegroundWindow(gameWindow);
         }
     }
