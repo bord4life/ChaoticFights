@@ -11,6 +11,7 @@ using static ChaoticFights.UISetup;
 
 namespace ChaoticFights
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public class Core : MelonMod
     {
         public static string basePath = Path.Combine(Directory.GetCurrentDirectory(), "UserData", "ChaoticFights");
@@ -25,8 +26,8 @@ namespace ChaoticFights
         }
         public override void OnLateInitializeMelon()
         {
-            Actions.onMatchStarted += () => Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file2.Value, "Microsoft.Media.Player"));
-            Actions.onMatchEnded += () => Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file1.Value, "Microsoft.Media.Player"));
+            Actions.onMatchStarted += () => Task.Run(() => OpenAndLoop(file2.Value, "Microsoft.Media.Player"));
+            Actions.onMatchEnded += () => Task.Run(() => OpenAndLoop(file1.Value, "Microsoft.Media.Player"));
 
             _discordPollCts = new CancellationTokenSource();
             Task.Run(() => DiscordPollLoop(_discordPollCts.Token));
@@ -35,7 +36,7 @@ namespace ChaoticFights
         {
             if (sceneName == "Gym" || sceneName == "Park")
             {
-                Task.Run(() => OpenAndLoop("C:\\Program Files\\WindowsApps\\Microsoft.ZuneMusic_11.2604.9.0_x64__8wekyb3d8bbwe\\Microsoft.Media.Player.exe", file1.Value, "Microsoft.Media.Player"));
+                Task.Run(() => OpenAndLoop(file1.Value, "Microsoft.Media.Player"));
             }
         }
 
@@ -61,16 +62,17 @@ namespace ChaoticFights
                     _isDucked = false;
                 }
 
-                await Task.Delay(5000, ct).ContinueWith(_ => { });
+                await Task.Delay(5000, ct).ContinueWith(_ => { }, ct);
             }
         }
 
-        private bool IsDiscordInCall()
+        private static bool IsDiscordInCall()
         {
             return DiscordRPC.IsInVoiceCall();
         }
 
-        private void SetMediaPlayerVolume(float percent)
+        [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+        private static void SetMediaPlayerVolume(float percent)
         {
             var procs = Process.GetProcessesByName("Microsoft.Media.Player");
             if (procs.Length == 0) return;
@@ -89,7 +91,7 @@ namespace ChaoticFights
         [DllImport("user32.dll")]
         private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
 
-        public void OpenAndLoop(string exePath, string filePath, string processName)
+        public void OpenAndLoop(string filePath, string processName)
         {
             // Close if already open
             foreach (var p in Process.GetProcessesByName(processName))
@@ -178,6 +180,7 @@ namespace ChaoticFights
 
     public static class VolumeMixer
     {
+        [System.Runtime.Versioning.SupportedOSPlatform("windows")]
         public static void SetApplicationVolume(int pid, float level)
         {
             IMMDeviceEnumerator deviceEnumerator = null;
